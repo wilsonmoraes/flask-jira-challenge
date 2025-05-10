@@ -1,6 +1,6 @@
 from flask_restx import Namespace, Resource, fields
 
-from api_service.repositories.asset_repository import AssetRepository
+from api_service.services.asset_service import AssetService
 from api_service.services.auth_service import require_api_key
 
 api = Namespace("assets", description="Asset operations")
@@ -38,7 +38,7 @@ class AssetList(Resource):
     @api.marshal_list_with(asset_response_model)
     def get(self):
         """List all asset instances"""
-        assets = AssetRepository.get_all_assets()
+        assets = AssetService.get_all_assets()
         return [
             {
                 "id": asset.id,
@@ -57,7 +57,7 @@ class AssetList(Resource):
         data = api.payload
         asset = None
         try:
-            asset = AssetRepository.create_asset(data["asset_type_id"], data["data"])
+            asset = AssetService.create_asset(data["asset_type_id"], data["data"])
         except ValueError as e:
             api.abort(400, str(e))
         if not asset:
@@ -79,7 +79,7 @@ class AssetDetail(Resource):
     @api.marshal_with(asset_response_model)
     def get(self, asset_id):
         """Get an asset instance by ID"""
-        asset = AssetRepository.get_asset_by_id(asset_id)
+        asset = AssetService.get_asset_by_id(asset_id)
         if not asset:
             api.abort(404, "Asset not found")
         return {
@@ -95,7 +95,7 @@ class AssetDetail(Resource):
     @api.marshal_with(asset_response_model)
     def put(self, asset_id):
         """Update an asset instance"""
-        asset = AssetRepository.update_asset(asset_id, api.payload['data'])
+        asset = AssetService.update_asset(asset_id, api.payload['data'])
         if not asset:
             api.abort(404, "Asset not found")
         return {

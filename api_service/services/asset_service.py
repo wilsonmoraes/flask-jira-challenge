@@ -7,7 +7,7 @@ from api_service.extensions import db
 from api_service.models import AssetType, AssetField, Asset, AssetData
 
 
-class AssetRepository:
+class AssetService:
 
     # === Asset Types ===
 
@@ -38,7 +38,7 @@ class AssetRepository:
         if field_type not in ("Text", "Number"):
             raise APIBadRequest(f"Invalid field type '{field_type}'. Allowed types: 'Text', 'Number'")
 
-        asset_type = AssetRepository.get_asset_type_by_id(asset_type_id)
+        asset_type = AssetService.get_asset_type_by_id(asset_type_id)
         if not asset_type:
             raise APIBadRequest(f"AssetType with ID {asset_type_id} not found")
 
@@ -57,7 +57,7 @@ class AssetRepository:
 
     @staticmethod
     def get_fields_for_type(asset_type_id):
-        asset_type = AssetRepository.get_asset_type_by_id(asset_type_id)
+        asset_type = AssetService.get_asset_type_by_id(asset_type_id)
         if not asset_type:
             return None
         return asset_type.fields
@@ -70,7 +70,7 @@ class AssetRepository:
         if not data:
             raise APIBadRequest("Missing 'data' payload")
 
-        asset_type = AssetRepository.get_asset_type_by_id(asset_type_id)
+        asset_type = AssetService.get_asset_type_by_id(asset_type_id)
 
         if not asset_type:
             raise APIBadRequest(f"AssetType with ID {asset_type_id} not found")

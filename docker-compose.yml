@@ -11,6 +11,8 @@ services:
       FLASK_ENV: development
       DATABASE_URL: postgresql://postgres:postgres@db:5432/app_db
       SECRET_KEY: Dyn4m1cAsS3tKey
+      CACHE_TYPE: RedisCache
+      CACHE_REDIS_URL: redis://redis:6379/0
     depends_on:
       - db
 
@@ -25,6 +27,12 @@ services:
       - "5432:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
+
+  redis:
+    image: redis:7
+    container_name: redis-cache
+    ports:
+      - "6379:6379"
 
 volumes:
   pgdata:

@@ -16,14 +16,8 @@ PROPAGATE_EXCEPTIONS = True
 SQLALCHEMY_DATABASE_URI = os.getenv("DATABASE_URL")
 SQLALCHEMY_TRACK_MODIFICATIONS = False
 
-JWT_SECRET_KEY = os.getenv("JWT_SECRET_KEY", "super-jwt-secret")
-JWT_TOKEN_LOCATION = ["headers"]
-JWT_ACCESS_TOKEN_EXPIRES = 3600  # 1 hour
-JWT_REFRESH_TOKEN_EXPIRES = 86400  # 1 day
-JWT_HEADER_NAME = "Authorization"
-JWT_HEADER_TYPE = "Bearer"
-JWT_VERIFY_SUB = False
-
 # Flask-Caching
-CACHE_TYPE = "SimpleCache"  # Can be moved to Redis only changing this line to "RedisCache" and adding CACHE_REDIS_URL config
-CACHE_DEFAULT_TIMEOUT = 300  # seconds
+CACHE_TYPE = os.getenv("CACHE_TYPE", "SimpleCache")
+CACHE_REDIS_URL = os.getenv("CACHE_REDIS_URL")
+
+RESTPLUS_MASK_SWAGGER = os.getenv("RESTPLUS_MASK_SWAGGER", False)

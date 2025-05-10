@@ -1,6 +1,6 @@
 # encoding: utf-8
 
-from flask import Flask
+from flask import Flask, redirect
 
 from api_service.api import api as restx_api
 from api_service.extensions import db, cache
@@ -18,6 +18,7 @@ def create_app(testing=False):
         app.config["TESTING"] = True
 
     configure_extensions(app)
+    register_root_redirect(app)
     register_restx_api(app)
 
     return app
@@ -28,6 +29,11 @@ def configure_extensions(app):
     migrate.init_app(app, db)
     app.cli.add_command(cli)
 
+
+def register_root_redirect(app):
+    @app.route("/", endpoint="redirect_root_to_docs")
+    def root_redirect():
+        return redirect("/docs", code=302)
 
 def register_restx_api(app):
     restx_api.init_app(app)

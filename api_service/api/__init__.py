@@ -19,6 +19,7 @@ api = Api(
     doc="/docs",
     authorizations=authorizations,
     security="APIKeyHeader"
+
 )
 
 api.add_namespace(asset_type_ns, path="/api/v1/asset-types")
