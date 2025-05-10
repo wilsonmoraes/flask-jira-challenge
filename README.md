@@ -1,34 +1,27 @@
-Fechou! Aqui está um `README.md` completo e profissional para o seu projeto Flask de gestão de ativos dinâmicos — com tudo: Docker, Redis, autenticação via API Key, exemplos de payloads, validações, caching e Swagger.
-
----
-
-### 📄 README.md
-
-```markdown
-# 🧠 Dynamic Asset Management API
+#  Dynamic Asset Management API
 
 A Flask-based RESTful API to manage dynamic asset types, their fields, and asset instances. Supports custom field definitions, per-type asset validation, API Key authentication, caching with Redis, and auto-generated Swagger docs.
 
 ---
 
-## 🚀 Features
+## Features
 
-- ✅ Dynamic asset types and custom fields (`Text` / `Number`)
-- ✅ Assets store field values based on their type
-- 🔐 Secured via `X-API-KEY` header
-- 🧠 Caching with Redis for GET endpoints
-- 📦 Docker and Docker Compose ready
-- 📚 Swagger UI: `/docs`
+-  Dynamic asset types and custom fields (`Text` / `Number`)
+-  Assets store field values based on their type
+-  Secured via `X-API-KEY` header
+-  Caching with Redis for GET endpoints
+-  Docker and Docker Compose ready
+-  Swagger UI: `/docs`
 
 ---
 
-## 🔐 Authentication
+##  Authentication
 
 All endpoints require an API key passed via the header:
 
 ```
 
-X-API-KEY: Dyn4m1cAsS3tKey
+X-API-KEY: <example>
 
 ````
 
@@ -36,7 +29,7 @@ Unauthorized requests will return `401 Unauthorized`.
 
 ---
 
-## 📦 Tech Stack
+## Tech Stack
 
 - Python 3.11
 - Flask 3.1
@@ -48,13 +41,13 @@ Unauthorized requests will return `401 Unauthorized`.
 
 ---
 
-## 🐳 Getting Started (Docker)
+## Getting Started (Docker)
 
 ### 1. Clone the repo
 
 ```bash
-git clone https://github.com/your-user/your-repo.git
-cd your-repo
+git clone https://github.com/wilsonmoraes/flask-jira-challenge.git
+cd flask-jira-challenge
 ````
 
 ### 2. Build and run
@@ -71,7 +64,7 @@ This will start:
 
 ---
 
-## 🔧 Environment Variables
+## Environment Variables
 
 Create a `.env` or `.flaskenv` file in the project root:
 
@@ -86,13 +79,13 @@ CACHE_REDIS_URL=redis://redis:6379/0
 
 ---
 
-## 📚 Swagger Docs
+## Swagger Docs
 
 Visit: [http://localhost:5000/docs](http://localhost:5000/docs)
 
 ---
 
-## 📌 Example Payloads
+##  Example Payloads
 
 ### Create Asset Type
 
@@ -156,7 +149,7 @@ POST /api/v1/assets
 
 ---
 
-## 🧠 Caching Behavior
+## Caching Behavior
 
 * `GET /api/v1/assets` → cached for 60s under `assets:all`
 * `GET /api/v1/assets/<id>` → cached per ID
@@ -170,7 +163,7 @@ Cache is invalidated on:
 
 ---
 
-## 🛠 CLI Commands
+## CLI Commands
 
 Run inside container:
 
@@ -184,7 +177,7 @@ flask init         # Seeds initial asset types
 
 ---
 
-## 🧪 Testing (Optional)
+## Testing (Optional)
 
 ```bash
 pytest
@@ -192,19 +185,12 @@ pytest
 
 ---
 
-## ❤️ Contributing
+## Contributing
 
 Feel free to fork and submit PRs. Feedback and ideas are welcome!
 
 ---
 
-## 📄 License
+## License
 
 MIT — use freely.
-
-```
-
----
-
-Se quiser, posso gerar um `.gitlab-ci.yml` também com testes, lint e build dockerizado. Quer?
-```
