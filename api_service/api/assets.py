@@ -1,7 +1,12 @@
+from flask import request
 from flask_restx import Namespace, Resource, fields
+from api_service.extensions import cache
 
 from api_service.services.asset_service import AssetService
 from api_service.services.auth_service import require_api_key
+
+ASSET_CACHE_KEY = lambda asset_id: f"asset:{asset_id}"
+ASSET_ALL_CACHE_KEY = "assets:all"
 
 api = Namespace("assets", description="Asset operations")
 
@@ -35,6 +40,7 @@ asset_response_model = api.model("AssetResponse", {
 class AssetList(Resource):
     method_decorators = [require_api_key]
 
+    @cache.cached(timeout=60, key_prefix=ASSET_ALL_CACHE_KEY)
     @api.marshal_list_with(asset_response_model)
     def get(self):
         """List all asset instances"""
@@ -62,6 +68,7 @@ class AssetList(Resource):
             api.abort(400, str(e))
         if not asset:
             api.abort(404, "Asset type not found")
+        cache.delete(ASSET_ALL_CACHE_KEY)
         return {
             "id": asset.id,
             "asset_type_id": asset.asset_type_id,
@@ -76,6 +83,7 @@ class AssetList(Resource):
 class AssetDetail(Resource):
     method_decorators = [require_api_key]
 
+    @cache.cached(timeout=60, key_prefix=lambda: ASSET_CACHE_KEY(request.view_args['asset_id']))
     @api.marshal_with(asset_response_model)
     def get(self, asset_id):
         """Get an asset instance by ID"""
@@ -98,6 +106,10 @@ class AssetDetail(Resource):
         asset = AssetService.update_asset(asset_id, api.payload['data'])
         if not asset:
             api.abort(404, "Asset not found")
+
+        cache.delete(ASSET_ALL_CACHE_KEY)
+        cache.delete(ASSET_CACHE_KEY(asset_id))
+
         return {
             "id": asset.id,
             "asset_type_id": asset.asset_type_id,

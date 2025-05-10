@@ -1,7 +1,13 @@
+from flask import request
 from flask_restx import Namespace, Resource, fields
 
+from api_service.extensions import cache
 from api_service.services.asset_service import AssetService
 from api_service.services.auth_service import require_api_key
+
+ASSET_TYPE_ALL_CACHE_KEY = "asset_types:all"
+ASSET_TYPE_CACHE_KEY = lambda type_id: f"asset_types:{type_id}"
+ASSET_TYPE_FIELDS_CACHE_KEY = lambda type_id: f"asset_types:{type_id}:fields"
 
 api = Namespace("asset-types", description="Asset Type operations")
 
@@ -31,8 +37,12 @@ class AssetTypes(Resource):
     def post(self):
         """Create a new asset type"""
         data = api.payload
+
+        cache.delete(ASSET_TYPE_ALL_CACHE_KEY)
+
         return AssetService.create_asset_type(data["name"]), 201
 
+    @cache.cached(timeout=60, key_prefix=ASSET_TYPE_ALL_CACHE_KEY)
     @api.marshal_list_with(asset_type_model)
     def get(self):
         """List all asset types"""
@@ -42,6 +52,8 @@ class AssetTypes(Resource):
 @api.route("/<int:type_id>")
 class AssetType(Resource):
     method_decorators = [require_api_key]
+
+    @cache.cached(timeout=60, key_prefix=lambda: ASSET_TYPE_CACHE_KEY(request.view_args["type_id"]))
     @api.marshal_with(asset_type_model)
     def get(self, type_id):
         """Get asset type by ID"""
@@ -54,6 +66,8 @@ class AssetType(Resource):
 @api.route("/<int:type_id>/fields")
 class AssetFieldList(Resource):
     method_decorators = [require_api_key]
+
+    @cache.cached(timeout=60, key_prefix=lambda: ASSET_TYPE_FIELDS_CACHE_KEY(request.view_args["type_id"]))
     @api.marshal_list_with(field_model)
     def get(self, type_id):
         """List all fields for a given asset type"""
@@ -74,4 +88,8 @@ class AssetFieldList(Resource):
         )
         if field is None:
             api.abort(404, "Asset type not found")
+
+        cache.delete(ASSET_TYPE_FIELDS_CACHE_KEY(type_id))
+        cache.delete(ASSET_TYPE_ALL_CACHE_KEY)
+
         return field, 201
