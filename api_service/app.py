@@ -3,7 +3,7 @@
 from flask import Flask
 from flask_jwt_extended import JWTManager
 
-from api_service import api
+from api_service.api import api as restx_api
 from api_service.extensions import db, cache
 from api_service.extensions import migrate
 from api_service.manage import cli
@@ -20,7 +20,7 @@ def create_app(testing=False):
         app.config["TESTING"] = True
 
     configure_extensions(app)
-    register_blueprints(app)
+    register_restx_api(app)
 
     return app
 
@@ -31,9 +31,8 @@ def configure_extensions(app):
     app.cli.add_command(cli)
 
 
-def register_blueprints(app):
-    app.register_blueprint(api.views.api_bp)
-    app.register_blueprint(api.views.auth_bp)
+def register_restx_api(app):
+    restx_api.init_app(app)
 
 
 if __name__ == "__main__":

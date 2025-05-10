@@ -1,10 +1,12 @@
 import logging
 
+from flask import request, abort
 from flask_jwt_extended import (
     JWTManager, create_access_token, create_refresh_token,
     jwt_required, get_jwt_identity, get_jwt
 )
 
+from api_service.config import SECRET_KEY
 from api_service.extensions import pwd_context
 from api_service.models import User
 
@@ -72,3 +74,10 @@ def jwt_admin_required(f):
         return f(*args, **kwargs)
 
     return decorated_function
+
+def require_api_key(func):
+    def wrapper(*args, **kwargs):
+        if request.headers.get('X-API-KEY') != SECRET_KEY:
+            abort(401, description='Invalid or missing API key')
+        return func(*args, **kwargs)
+    return wrapper
