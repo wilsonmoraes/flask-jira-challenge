@@ -7,7 +7,7 @@ services:
     ports:
       - "5000:5000"
     environment:
-      FLASK_APP: api_service:create_app
+      FLASK_APP: api_service.app:create_app
       FLASK_ENV: development
       DATABASE_URL: postgresql://postgres:postgres@db:5432/app_db
       SECRET_KEY: Dyn4m1cAsS3tKey
