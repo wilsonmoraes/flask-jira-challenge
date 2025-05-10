@@ -3,6 +3,8 @@
 import click
 from flask.cli import with_appcontext
 
+from api_service.models import AssetType
+
 
 @click.group()
 def cli():
@@ -13,25 +15,18 @@ def cli():
 @cli.command("init")
 @with_appcontext
 def init():
-    """Create a new admin user"""
+    """Initialize default asset types"""
     from api_service.extensions import db
-    from api_service.models import User
 
-    click.echo("Checking if users exist...")
+    click.echo("Checking and seeding default asset types...")
 
-    if not User.query.filter_by(username="admin").first():
-        user1 = User(username="admin", email="admin@mail.com", password="admin", active=True, role='ADMIN')
-        db.session.add(user1)
-        db.session.commit()
-        click.echo("Admin user created.")
+    default_types = ["Laptop", "Monitor", "Software License"]
+    for name in default_types:
+        if not AssetType.query.filter_by(name=name).first():
+            db.session.add(AssetType(name=name))
 
-    if not User.query.filter_by(username="johndoe").first():
-        user2 = User(username="johndoe", email="johndoe@mail.com", password="john", active=True, role='USER')
-        db.session.add(user2)
-        db.session.commit()
-        click.echo("John Doe user created.")
-
-    click.echo("User creation completed.")
+    db.session.commit()
+    click.echo("Default asset types created (if not already present).")
 
 
 if __name__ == "__main__":

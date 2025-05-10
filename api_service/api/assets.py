@@ -1,6 +1,7 @@
 from flask_restx import Namespace, Resource, fields
 
 from api_service.repositories.asset_repository import AssetRepository
+from api_service.services.auth_service import require_api_key
 
 api = Namespace("assets", description="Asset operations")
 
@@ -18,7 +19,6 @@ asset_update_model = api.model("AssetUpdate", {
     "data": fields.List(fields.Nested(asset_data_item), required=True)
 })
 
-
 asset_data_output_item = api.model("AssetDataOutput", {
     "field_id": fields.Integer(),
     "value": fields.Raw()
@@ -33,6 +33,8 @@ asset_response_model = api.model("AssetResponse", {
 
 @api.route("")
 class AssetList(Resource):
+    method_decorators = [require_api_key]
+
     @api.marshal_list_with(asset_response_model)
     def get(self):
         """List all asset instances"""
@@ -71,6 +73,8 @@ class AssetList(Resource):
 
 @api.route("/<int:asset_id>")
 class AssetDetail(Resource):
+    method_decorators = [require_api_key]
+
     @api.marshal_with(asset_response_model)
     def get(self, asset_id):
         """Get an asset instance by ID"""

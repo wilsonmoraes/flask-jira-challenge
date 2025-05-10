@@ -1,6 +1,7 @@
 from flask_restx import Namespace, Resource, fields
 
 from api_service.repositories.asset_repository import AssetRepository
+from api_service.services.auth_service import require_api_key
 
 api = Namespace("asset-types", description="Asset Type operations")
 
@@ -23,6 +24,7 @@ field_input = api.model("AssetFieldInput", {
 
 @api.route("")
 class AssetTypes(Resource):
+    method_decorators = [require_api_key]
 
     @api.expect(asset_type_model)
     @api.marshal_with(asset_type_model, code=201)
@@ -39,6 +41,7 @@ class AssetTypes(Resource):
 
 @api.route("/<int:type_id>")
 class AssetType(Resource):
+    method_decorators = [require_api_key]
     @api.marshal_with(asset_type_model)
     def get(self, type_id):
         """Get asset type by ID"""
@@ -50,6 +53,7 @@ class AssetType(Resource):
 
 @api.route("/<int:type_id>/fields")
 class AssetFieldList(Resource):
+    method_decorators = [require_api_key]
     @api.marshal_list_with(field_model)
     def get(self, type_id):
         """List all fields for a given asset type"""

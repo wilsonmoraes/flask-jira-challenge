@@ -1,7 +1,6 @@
 # encoding: utf-8
 
 from flask import Flask
-from flask_jwt_extended import JWTManager
 
 from api_service.api import api as restx_api
 from api_service.extensions import db, cache
@@ -13,7 +12,6 @@ def create_app(testing=False):
     app = Flask("api_service")
     app.config.from_object("api_service.config")
 
-    JWTManager(app)
     cache.init_app(app)
 
     if testing is True:
