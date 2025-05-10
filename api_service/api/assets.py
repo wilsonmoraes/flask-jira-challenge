@@ -4,17 +4,30 @@ from api_service.repositories.asset_repository import AssetRepository
 
 api = Namespace("assets", description="Asset operations")
 
-asset_data_field = fields.Raw(required=True, description="Field-value pairs based on asset type")
+asset_data_item = api.model("AssetDataInput", {
+    "field_id": fields.Integer(required=True),
+    "value": fields.Raw(required=True)
+})
 
 asset_input_model = api.model("AssetInput", {
     "asset_type_id": fields.Integer(required=True),
-    "data": asset_data_field
+    "data": fields.List(fields.Nested(asset_data_item), required=True)
+})
+
+asset_update_model = api.model("AssetUpdate", {
+    "data": fields.List(fields.Nested(asset_data_item), required=True)
+})
+
+
+asset_data_output_item = api.model("AssetDataOutput", {
+    "field_id": fields.Integer(),
+    "value": fields.Raw()
 })
 
 asset_response_model = api.model("AssetResponse", {
     "id": fields.Integer(),
     "asset_type_id": fields.Integer(),
-    "data": fields.Raw()
+    "data": fields.List(fields.Nested(asset_data_output_item))
 })
 
 
@@ -28,7 +41,10 @@ class AssetList(Resource):
             {
                 "id": asset.id,
                 "asset_type_id": asset.asset_type_id,
-                "data": {d.field.name: d.value for d in asset.data}
+                "data": [
+                    {"field_id": d.field_id, "value": d.value}
+                    for d in asset.data
+                ]
             } for asset in assets
         ]
 
@@ -46,7 +62,10 @@ class AssetList(Resource):
         return {
             "id": asset.id,
             "asset_type_id": asset.asset_type_id,
-            "data": {d.field.name: d.value for d in asset.data}
+            "data": [
+                {"field_id": d.field_id, "value": d.value}
+                for d in asset.data
+            ]
         }, 201
 
 
@@ -61,19 +80,24 @@ class AssetDetail(Resource):
         return {
             "id": asset.id,
             "asset_type_id": asset.asset_type_id,
-            "data": {d.field.name: d.value for d in asset.data}
+            "data": [
+                {"field_id": d.field_id, "value": d.value}
+                for d in asset.data
+            ]
         }
 
-    @api.expect(asset_input_model)
+    @api.expect(asset_update_model)
     @api.marshal_with(asset_response_model)
     def put(self, asset_id):
         """Update an asset instance"""
-        data = api.payload
-        asset = AssetRepository.update_asset(asset_id, data["data"])
+        asset = AssetRepository.update_asset(asset_id, api.payload['data'])
         if not asset:
             api.abort(404, "Asset not found")
         return {
             "id": asset.id,
             "asset_type_id": asset.asset_type_id,
-            "data": {d.field.name: d.value for d in asset.data}
+            "data": [
+                {"field_id": d.field_id, "value": d.value}
+                for d in asset.data
+            ]
         }

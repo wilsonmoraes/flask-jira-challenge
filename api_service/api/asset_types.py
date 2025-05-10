@@ -22,11 +22,7 @@ field_input = api.model("AssetFieldInput", {
 
 
 @api.route("")
-class AssetTypeList(Resource):
-    @api.marshal_list_with(asset_type_model)
-    def get(self):
-        """List all asset types"""
-        return AssetRepository.get_all_asset_types()
+class AssetTypes(Resource):
 
     @api.expect(asset_type_model)
     @api.marshal_with(asset_type_model, code=201)
@@ -35,9 +31,14 @@ class AssetTypeList(Resource):
         data = api.payload
         return AssetRepository.create_asset_type(data["name"]), 201
 
+    @api.marshal_list_with(asset_type_model)
+    def get(self):
+        """List all asset types"""
+        return AssetRepository.get_all_asset_types()
+
 
 @api.route("/<int:type_id>")
-class AssetTypeDetail(Resource):
+class AssetType(Resource):
     @api.marshal_with(asset_type_model)
     def get(self, type_id):
         """Get asset type by ID"""
