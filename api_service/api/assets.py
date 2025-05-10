@@ -55,6 +55,7 @@ class AssetList(Resource):
     def post(self):
         """Create a new asset instance"""
         data = api.payload
+        asset = None
         try:
             asset = AssetRepository.create_asset(data["asset_type_id"], data["data"])
         except ValueError as e:
